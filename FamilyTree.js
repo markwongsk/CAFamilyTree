@@ -6,6 +6,47 @@ var MINIMAL_SPACING = 35;
 var VERTICAL_SPACING = 50;
 var SEMESTER_NOW = 8;
 
+// CA class
+// 
+// andrewid - the andrewid of the CA
+// children - a list of children this CA taught
+// pos - the position this CA's name will be drawn
+//       (anchored at south)
+// semester - the semester the CA first CAed
+// active - whether this CA is being displayed 
+function CA(andrewid, children, pos, semester, active) {
+  this.andrewid = andrewid;
+  this.children = children;
+  this.pos = pos;
+  this.semester = semester;
+  semesterToCA[semester].push(this);
+  this.active = (active === undefined ? false : active);
+
+}
+
+// gets the bounding box for where this CA's name is being drawn
+CA.prototype.getBBox = function() {
+  var measure = ctx.measureText(andrewid);
+  console.log("Getting bbox of: " + ca);
+  var cx = ca.pos[0];
+  var cy = ca.pos[1];
+  return new bBox(cx-measure.width/2, cy-2*VERTICAL_SPACING/3,
+                  cx+measure.width/2, cy)
+}
+
+// adds a child to the list of children this CA has
+CA.prototype.addChild = function(child) {
+  this.children.push(child);
+}
+
+// BBox class
+function bBox(left, top, right, bottom) {
+  this.left = left;
+  this.top = top;
+  this.right = right;
+  this.bottom = bottom;
+}
+
 function drawFamilyTree() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     var activeCAs = repositionCAs(semesterToCA);
@@ -89,22 +130,6 @@ for (var i = 0; i < SEMESTER_NOW; i++) {
   semesterToCA[i] = [];
 }
 
-function CA(andrewid, children, pos, semester, active) {
-  this.andrewid = andrewid;
-  this.children = children;
-  this.pos = pos;
-  this.semester = semester;
-  semesterToCA[semester].push(this);
-  this.active = (active === undefined ? false : active);
-}
-
-function bBox(left, top, right, bottom) {
-  this.left = left;
-  this.top = top;
-  this.right = right;
-  this.bottom = bottom;
-}
-
 function getbBox(ca) {
   var text = ca.andrewid;
   var measure = ctx.measureText(text);
@@ -141,7 +166,12 @@ function onMouseDown(event) {
 
   if (ca !== null) {
     console.log("You clicked: " + ca.andrewid);
+    for (var i = 0; i < ca.children.length; i++) {
+      ca.children[i].active = true;
+    }
   }
+
+  drawFamilyTree();
 }
 
 canvas.addEventListener('mousedown', onMouseDown, false);
@@ -151,8 +181,8 @@ canvas.addEventListener('mousedown', onMouseDown, false);
 // andrewid - the andrewid of this ca
 // children - a list of students ever taught by this ca
 // pos - the position that the 
-asdf = new CA("asdf", [], [0,0], 1, true);
-yeah = new CA("yeah", [], [0,0], 1, true);
+asdf = new CA("asdf", [], [0,0], 1, false);
+yeah = new CA("yeah", [], [0,0], 1, false);
 kelly = new CA("krivers", [asdf, yeah], [0,0], 0, true);
 
 drawFamilyTree();
