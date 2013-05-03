@@ -32,7 +32,7 @@ CA.prototype.getBBox = function() {
   console.log("Getting bbox of: " + this.andrewid);
   var cx = this.pos[0];
   var cy = this.pos[1];
-  return new BBox(cx-measure.width/2, cy-2*TEXT_HEIGHT,
+  return new BBox(cx-measure.width/2, cy-TEXT_HEIGHT,
                   cx+measure.width/2, cy)
 }
 
@@ -47,6 +47,8 @@ function BBox(left, top, right, bottom) {
   this.top = top;
   this.right = right;
   this.bottom = bottom;
+  this.width = right-left;
+  this.height = bottom-top;
 }
 
 function drawFamilyTree() {
@@ -60,8 +62,7 @@ function drawFamilyTree() {
     }
     for (var s = 0; s < SEMESTER_NOW; s++) {
         for (var i = 0; i < activeCAs[s].length; i ++) {
-            drawNode(activeCAs[s][i].pos[0], activeCAs[s][i].pos[1],
-                    activeCAs[s][i].andrewid);
+            drawNode(activeCAs[s][i]);
         }
     }
 }
@@ -86,11 +87,10 @@ function drawSegment(x1, y1, x2, y2) {
     ctx.stroke();
 }
 
-function drawNode(x, y, value) {
-    var w = ctx.measureText(value);
-    console.log("Drawing: " + value + " at (" + x + "," + y + ")");
-    console.log(w);
-    ctx.rect(x-w.width/2,y-2*VERTICAL_SPACING/3, w.width,2*VERTICAL_SPACING/3);
+function drawNode(ca) {
+    var bbox = ca.getBBox();
+    console.log("Drawing: " + ca.andrewid + " at (" + ca.pos[0] + "," + ca.pos[1] + ")");
+    ctx.rect(bbox.left, bbox.top, bbox.width, bbox.height);
     ctx.fillStyle = "blue";
     ctx.fill();
 
@@ -98,7 +98,7 @@ function drawNode(x, y, value) {
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
     ctx.textBaseline = "bottom";
-    ctx.fillText(value, x, y);
+    ctx.fillText(ca.andrewid, ca.pos[0], ca.pos[1]);
 }
 
 function repositionCAs(semesterToCAs) {
