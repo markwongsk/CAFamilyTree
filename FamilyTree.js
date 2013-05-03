@@ -5,6 +5,7 @@ var ctx = canvas.getContext("2d");
 var MINIMAL_SPACING = 35;
 var VERTICAL_SPACING = 50;
 var SEMESTER_NOW = 8;
+var TEXT_HEIGHT = 30;
 
 function drawFamilyTree() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -17,13 +18,12 @@ function drawFamilyTree() {
     for (var s = 0; s < SEMESTER_NOW; s++) {
         for (var i = 0; i < activeCAs[s].length; i ++) {
             drawNode(activeCAs[s][i].pos[0], activeCAs[s][i].pos[1],
-                    activeCAs[s][i].andrewid);
+                    activeCAs[s][i]);
         }
     }
 }
 
 function drawConnections(ca) {
-    console.log(ca.children.length);
     for (var i = 0; i < ca.children.length; i ++) {
         if (ca.children[i].active) {
             drawSegment(ca.pos[0], ca.pos[1],
@@ -42,18 +42,18 @@ function drawSegment(x1, y1, x2, y2) {
     ctx.stroke();
 }
 
-function drawNode(x, y, value) {
-    var w = ctx.measureText(value);
-    console.log("Drawing: " + value + " at (" + x + "," + y + ")");
-    ctx.rect(x-w.width/2,y-2*VERTICAL_SPACING/3, w.width,2*VERTICAL_SPACING/3);
+function drawNode(x, y, ca) {
+    var bbox = getbBox(ca);
+    ctx.rect(bbox.left, bbox.top, bbox.width, bbox.height);
     ctx.fillStyle = "blue";
     ctx.fill();
 
     ctx.beginPath();
     ctx.fillStyle = "black";
-    ctx.font = "30px Arial";
+    ctx.font = TEXT_HEIGHT+"px Arial";
     ctx.textAlign = "center";
-    ctx.fillText(value, x, y);
+    ctx.textBaseline = "bottom";
+    ctx.fillText(ca.andrewid, x, y);
 }
 
 function repositionCAs(semesterToCAs) {
@@ -81,6 +81,7 @@ function repositionCAs(semesterToCAs) {
 function resize(width, height) {
     canvas.width = width;
     canvas.height = height;
+    drawFamilyTree();
 }
 
 var semesterToCA = {};
@@ -103,29 +104,29 @@ function bBox(left, top, right, bottom) {
   this.top = top;
   this.right = right;
   this.bottom = bottom;
+  this.height = bottom-top;
+  this.width = right-left;
 }
 
 function getbBox(ca) {
   var text = ca.andrewid;
+  console.log(text);
   var measure = ctx.measureText(text);
-  console.log("Getting bbox of: " + ca);
+  console.log(measure.width);
   var cx = ca.pos[0];
   var cy = ca.pos[1];
-  return new bBox(cx-measure.width/2, cy-2*VERTICAL_SPACING/3,
-              cx+measure.width/2, cy)
+  return new bBox(cx-measure.width/2, cy-TEXT_HEIGHT,
+              cx+measure.width/2, cy);
 }
 
 function getCAAtCoord(x,y) {
-  console.log (semesterToCA);
   for (var semester in semesterToCA) {
     for (var i = 0; i < semesterToCA[semester].length; i++) {
       var ca = semesterToCA[semester][i];
-      console.log(ca);
       var bbox = getbBox(ca);
-      console.log(bbox);
       if (x >= bbox.left && x <= bbox.right &&
           y >= bbox.top && y <= bbox.bottom) {
-        return ca;
+        return semesterToCA[semester][ca];
       }
     }
   }
