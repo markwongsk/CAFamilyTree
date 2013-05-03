@@ -44,6 +44,7 @@ function drawSegment(x1, y1, x2, y2) {
 
 function drawNode(x, y, value) {
     var w = ctx.measureText(value);
+    console.log("Drawing: " + value + " at (" + x + "," + y + ")");
     ctx.rect(x-w.width/2,y-2*VERTICAL_SPACING/3, w.width,2*VERTICAL_SPACING/3);
     ctx.fillStyle = "blue";
     ctx.fill();
@@ -106,17 +107,22 @@ function bBox(left, top, right, bottom) {
 
 function getbBox(ca) {
   var text = ca.andrewid;
-  var measure = ctx.measuretext(text);
+  var measure = ctx.measureText(text);
+  console.log("Getting bbox of: " + ca);
   var cx = ca.pos[0];
   var cy = ca.pos[1];
-  return new bBox(cx-measure.width/2, cy-measure.height/2,
-              cx+measure.width/2, cy+measure.height/2)
+  return new bBox(cx-measure.width/2, cy-2*VERTICAL_SPACING/3,
+              cx+measure.width/2, cy)
 }
 
 function getCAAtCoord(x,y) {
+  console.log (semesterToCA);
   for (var semester in semesterToCA) {
-    for (var ca in semesterToCA[semester]) {
+    for (var i = 0; i < semesterToCA[semester].length; i++) {
+      var ca = semesterToCA[semester][i];
+      console.log(ca);
       var bbox = getbBox(ca);
+      console.log(bbox);
       if (x >= bbox.left && x <= bbox.right &&
           y >= bbox.top && y <= bbox.bottom) {
         return ca;
@@ -127,13 +133,14 @@ function getCAAtCoord(x,y) {
 }
 
 function onMouseDown(event) {
-  var x = event.pagex - canvas.offsetleft;
-  var y = event.pagey - canvas.offsettop;
+  var x = event.pageX - canvas.offsetLeft;
+  var y = event.pageY - canvas.offsetTop;
 
+  console.log("Clicked at: (" + x + "," + y + ")");
   ca = getCAAtCoord(x,y);
 
-  if (ca != null) {
-    console.log("You clicked: " + ca.name);
+  if (ca !== null) {
+    console.log("You clicked: " + ca.andrewid);
   }
 }
 
@@ -144,10 +151,9 @@ canvas.addEventListener('mousedown', onMouseDown, false);
 // andrewid - the andrewid of this ca
 // children - a list of students ever taught by this ca
 // pos - the position that the 
-asdf = new CA("asdf", [], (0, 0), 1, true);
-yeah = new CA("yeah", [], (0,0), 1, true);
-kelly = new CA("krivers", [asdf, yeah], (0,0), 0, true);
-
+asdf = new CA("asdf", [], [0,0], 1, true);
+yeah = new CA("yeah", [], [0,0], 1, true);
+kelly = new CA("krivers", [asdf, yeah], [0,0], 0, true);
 
 drawFamilyTree();
 
