@@ -1,60 +1,105 @@
-var SEMESTER_NOW = 8;
-// CAGraph represents the DAG of mentor-mentee relationship
-//
-// andrewid - the andrewid of this CA
-// children - a list of students ever taught by this CA
-// pos - the position that the 
-var CAGraph = CA(Kelly, [], (canvas.width/2, 10), 0);
-var semesterToCA = {};
+// CA Family tree
 
-for (var i = 0; i < SEMESTER_NOW; i++) {
-  semesterToCA[i] = [];
+var canvas = document.getElementById("myCanvas");
+var ctx = canvas.getContext("2d");
+
+function drawFamilyTree() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawNode(canvas.width/2,50, "CA 1");
+    drawSegment(canvas.width/2, 50, canvas.width/3,75);
+    drawNode(canvas.width/3,100, "CA 1");
+    drawSegment(canvas.width/2, 50, 2*canvas.width/3,75);
+    drawNode(2*canvas.width/3,100, "CA 1");
 }
 
-function CA(andrewid, children, pos, semester) {
+function drawSegment(x1, y1, x2, y2) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.closePath();
+    ctx.stroke();
+}
+
+function drawNode(x, y, value) {
+    ctx.font = "30px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText(value, x, y);
+}
+
+function resize(width, height) {
+    canvas.width = width;
+    canvas.height = height;
+}
+
+var semestertoca = {};
+
+for (var i = 0; i < semester_now; i++) {
+  semestertoca[i] = [];
+}
+
+function ca(andrewid, children, pos, semester, active = false) {
   this.andrewid = andrewid;
   this.children = children;
   this.pos = pos;
   this.semester = semester;
-  semesterToCA[semester].push(this);
-  this.active = false;
+  semestertoca[semester].push(this);
+  this.active = active;
 }
 
-function Bbox(left, top, right, bottom) {
+function bbox(left, top, right, bottom) {
   this.left = left;
   this.top = top;
   this.right = right;
   this.bottom = bottom;
 }
 
-function getBbox(CA) {
-  var text = CA.andrewid;
-  var measure = ctx.measureText(text);
-  var cx = CA.pos[0];
-  var cy = CA.pos[1];
-  return Bbox(cx-measure.width/2, cy-measure.height/2,
+function getbbox(ca) {
+  var text = ca.andrewid;
+  var measure = ctx.measuretext(text);
+  var cx = ca.pos[0];
+  var cy = ca.pos[1];
+  return bbox(cx-measure.width/2, cy-measure.height/2,
               cx+measure.width/2, cy+measure.height/2)
 }
 
-function getCAAtCoord(x,y) {
-  for (var semester in semesterToCA) {
-    for (var CA in semesterToCA[semester]) {
-      var bbox = getBbox(CA);
+function getcaatcoord(x,y) {
+  for (var semester in semestertoca) {
+    for (var ca in semestertoca[semester]) {
+      var bbox = getbbox(ca);
       if (x >= bbox.left && x <= bbox.right &&
           y >= bbox.top && y <= bbox.bottom) {
-        return CA;
+        return ca;
       }
     }
   }
-  return new Object();
+  return null;
 }
 
-function onMouseDown(event) {
-  var x = event.pageX - canavs.offsetLeft;
-  var y = event.pageY - canvas.offsetTop;
+function onmousedown(event) {
+  var x = event.pagex - canavs.offsetleft;
+  var y = event.pagey - canvas.offsettop;
 
-  ca = getCAAtCoord(x,y);
+  ca = getcaatcoord(x,y);
+
+  if (ca != null) {
+    console.log("You clicked: " + ca.name);
+  }
 }
 
-canvas.addEventListener('mousedown', onMouseDown, false);
+canvas.addeventlistener('mousedown', onmousedown, false);
+
+var semester_now = 8;
+// cagraph represents the dag of mentor-mentee relationship
+//
+// andrewid - the andrewid of this ca
+// children - a list of students ever taught by this ca
+// pos - the position that the 
+var cagraph = ca(kelly, [], (canvas.width/2, 10), 0, true);
+
+drawFamilyTree();
+setTimeout(function() {
+    resize(750,750);
+    drawFamilyTree();
+}, 5000);
+
 
