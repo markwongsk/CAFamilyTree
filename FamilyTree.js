@@ -182,9 +182,13 @@ canvas.addEventListener('mousedown', onMouseDown, false);
 // andrewid - the andrewid of this ca
 // children - a list of students ever taught by this ca
 // pos - the position that the 
-asdf = new CA("asdf", [], [0,0], 1, false);
-yeah = new CA("yeah", [], [0,0], 1, false);
-kelly = new CA("krivers", [asdf, yeah], [0,0], 0, true);
+asdf = new CA("asdf", [], [0,0], 1, 0);
+blah = new CA("blah", [], [0,0], 2, 0);
+hey = new CA("hey", [], [0,0], 2, 0);
+yeah = new CA("yeah", [blah, hey], [0,0], 1, 0);
+kelly = new CA("krivers", [asdf, yeah, blah], [0,0], 0, 1);
+
+
 
 console.log("WHAT THE FUCK");
 drawFamilyTree();
