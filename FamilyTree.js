@@ -41,6 +41,11 @@ CA.prototype.addChild = function(child) {
   this.children.push(child);
 }
 
+// adds children to the list of children this CA has
+CA.prototype.addChildren = function(children) {
+  this.children.push.apply(children);
+}
+
 // BBox class
 function BBox(left, top, right, bottom) {
   this.left = left;
@@ -187,8 +192,6 @@ blah = new CA("blah", [], [0,0], 2, 0);
 hey = new CA("hey", [], [0,0], 2, 0);
 yeah = new CA("yeah", [blah, hey], [0,0], 1, 0);
 kelly = new CA("krivers", [asdf, yeah, blah], [0,0], 0, 1);
-
-
 
 console.log("WHAT THE FUCK");
 drawFamilyTree();
