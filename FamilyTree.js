@@ -3,7 +3,7 @@
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 var TEXT_HEIGHT = 30;
-var MINIMAL_SPACING = 150;
+var MINIMAL_SPACING = 100;
 var VERTICAL_SPACING = 50;
 var SEMESTER_NOW = 15;
 
@@ -121,7 +121,7 @@ function repositionCAs(semesterToCA) {
         var spacing = canvas.width/(activeCAs[s].length+1);
         if (spacing < MINIMAL_SPACING) {
             resize(canvas.width*2, canvas.height*2);
-            return;
+            return repositionCAs(semesterToCA);
         }
         for (i = 0; i < activeCAs[s].length; i++) {
             activeCAs[s][i].pos = [spacing*(i+1), (s+1)*VERTICAL_SPACING];
