@@ -50,14 +50,19 @@ for (mentor, mentees) in sourceDest.items():
     if mentee not in seen:
       #semestersCAed = [semesterToNumber[semester] for semester in CAtoCAInfo[mentee]["CAed"] if semester]
       semestersCAed = CAtoCAInfo[mentee]["CAed"]
-      args = (mentee, [], [0,0], min(semestersCAed))
+      semestersCAed = [semester for semester in semestersCAed.keys() if semestersCAed[semester]]
+      args = (mentee, [], [0,0], min(semestersCAed), 0)
       jsfile.write(mentee + " = new CA" + repr(args) + "\n")
       seen.add(mentee)
   semestersCAed = CAtoCAInfo[mentor]["CAed"]
+  semestersCAed = [semester for semester in semestersCAed.keys() if semestersCAed[semester]]
   # semestersCAed = [semesterToNumber[semester] for semester in CAtoCAInfo[mentor]["CAed"] if semester]
-  args = (mentor, [], [0,0], min(semestersCAed))
-  jsfile.write(mentor + " = new CA" + repr(args) + "\n")
-  jsfile.write(mentor + ".addChildren([" + ",".join(mentees) + "]\n")
+  if min(semestersCAed) == 0:
+    args = (mentor, [], [0,0], 0, 1)
+  else:
+    args = (mentor, [], [0,0], min(semestersCAed), 0)
+  jsfile.write(mentor + " = new CA" + repr(args) + ";\n")
+  jsfile.write(mentor + ".addChildren([" + ",".join(mentees) + "]);\n")
   seen.add(mentor)
 
 jsfile.close()
