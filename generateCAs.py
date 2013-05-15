@@ -45,23 +45,40 @@ print sourceDest
 
 seen = set()
 jsfile = open("CAFamilyData.js", "w")
+def createCA(seen, CAtoCAInfo, sourceDest, jsfile, thisCA):
+  semestersCAed = CAtoCAInfo[thisCA]["CAed"]
+  semestersCAed = [semester for semester in semestersCAed.keys() if semestersCAed[semester]]
+
+  active = 1
+  for possibleMentor, mentees in sourceDest.items():
+    if thisCA in mentees:
+      active = 0
+      break
+
+  args = (thisCA, [], [0,0], min(semestersCAed), active)
+  jsfile.write(thisCA + " = new CA" + repr(args) + ";\n")
+  seen.add(thisCA)
+
 for (mentor, mentees) in sourceDest.items():
   for mentee in mentees:
     if mentee not in seen:
       #semestersCAed = [semesterToNumber[semester] for semester in CAtoCAInfo[mentee]["CAed"] if semester]
-      semestersCAed = CAtoCAInfo[mentee]["CAed"]
-      semestersCAed = [semester for semester in semestersCAed.keys() if semestersCAed[semester]]
-      args = (mentee, [], [0,0], min(semestersCAed), 0)
-      jsfile.write(mentee + " = new CA" + repr(args) + "\n")
-      seen.add(mentee)
-  semestersCAed = CAtoCAInfo[mentor]["CAed"]
-  semestersCAed = [semester for semester in semestersCAed.keys() if semestersCAed[semester]]
-  # semestersCAed = [semesterToNumber[semester] for semester in CAtoCAInfo[mentor]["CAed"] if semester]
-  if min(semestersCAed) == 0:
-    args = (mentor, [], [0,0], 0, 1)
-  else:
-    args = (mentor, [], [0,0], min(semestersCAed), 0)
-  jsfile.write(mentor + " = new CA" + repr(args) + ";\n")
+      #semestersCAed = CAtoCAInfo[mentee]["CAed"]
+      #semestersCAed = [semester for semester in semestersCAed.keys() if semestersCAed[semester]]
+      #args = (mentee, [], [0,0], min(semestersCAed), 0)
+      #jsfile.write(mentee + " = new CA" + repr(args) + "\n")
+      #seen.add(mentee)
+      createCA(seen, CAtoCAInfo, sourceDest, jsfile, mentee)
+
+  #semestersCAed = CAtoCAInfo[mentor]["CAed"]
+  #semestersCAed = [semester for semester in semestersCAed.keys() if semestersCAed[semester]]
+  ## semestersCAed = [semesterToNumber[semester] for semester in CAtoCAInfo[mentor]["CAed"] if semester]
+  #if min(semestersCAed) == 0:
+  #  args = (mentor, [], [0,0], 0, 1)
+  #else:
+  #  args = (mentor, [], [0,0], min(semestersCAed), 0)
+  #jsfile.write(mentor + " = new CA" + repr(args) + ";\n")
+  createCA(seen, CAtoCAInfo, sourceDest, jsfile, mentor)
   jsfile.write(mentor + ".addChildren([" + ",".join(mentees) + "]);\n")
   seen.add(mentor)
 
