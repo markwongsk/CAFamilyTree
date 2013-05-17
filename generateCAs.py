@@ -1,3 +1,13 @@
+import argparse
+
+# argparse-ing...
+parser = argparse.ArgumentParser(description="Generate JSON CA objects from .csv file")
+parser.add_argument("-m", metavar="<mode>", default="", type=str, nargs=1,
+                    help="Target JSON object used for JIT");
+result = parser.parse_args()
+result = vars(result)
+
+mode = result.get("m","")[0]
 f = open("CAFamilyData.csv")
 
 MAGIC_NUMBER = 4
@@ -43,12 +53,16 @@ for (ca1, info1) in CAtoCAInfo.items():
  
 print sourceDest
 
-seen = set()
-jsfile = open("CAFamilyData.js", "w")
 def createCA(seen, CAtoCAInfo, sourceDest, jsfile, thisCA):
+  if thisCA in seen: return
+  
+  for mentee in sourceDest.get(thisCA, []):
+    createCA(seen, CAtoCAInfo, sourceDest, jsfile, mentee)
+
   semestersCAed = CAtoCAInfo[thisCA]["CAed"]
   semestersCAed = [semester for semester in semestersCAed.keys() if semestersCAed[semester]]
 
+  # TODO: bad runtime, I'm saying F*** IT for now.
   active = 1
   for possibleMentor, mentees in sourceDest.items():
     if thisCA in mentees:
@@ -57,30 +71,68 @@ def createCA(seen, CAtoCAInfo, sourceDest, jsfile, thisCA):
 
   args = (thisCA, [], [0,0], min(semestersCAed), active)
   jsfile.write(thisCA + " = new CA" + repr(args) + ";\n")
+  jsfile.write(thisCA + ".addChildren([" + ",".join(sourceDest.get(thisCA, [])) + "]);\n")
   seen.add(thisCA)
 
-for (mentor, mentees) in sourceDest.items():
-  for mentee in mentees:
-    if mentee not in seen:
-      #semestersCAed = [semesterToNumber[semester] for semester in CAtoCAInfo[mentee]["CAed"] if semester]
-      #semestersCAed = CAtoCAInfo[mentee]["CAed"]
-      #semestersCAed = [semester for semester in semestersCAed.keys() if semestersCAed[semester]]
-      #args = (mentee, [], [0,0], min(semestersCAed), 0)
-      #jsfile.write(mentee + " = new CA" + repr(args) + "\n")
-      #seen.add(mentee)
-      createCA(seen, CAtoCAInfo, sourceDest, jsfile, mentee)
+def createCADracula(seen, CAtoCAInfo, sourceDest, jsfile, thisCA):
+  if thisCA in seen: return
 
-  #semestersCAed = CAtoCAInfo[mentor]["CAed"]
-  #semestersCAed = [semester for semester in semestersCAed.keys() if semestersCAed[semester]]
-  ## semestersCAed = [semesterToNumber[semester] for semester in CAtoCAInfo[mentor]["CAed"] if semester]
-  #if min(semestersCAed) == 0:
-  #  args = (mentor, [], [0,0], 0, 1)
-  #else:
-  #  args = (mentor, [], [0,0], min(semestersCAed), 0)
-  #jsfile.write(mentor + " = new CA" + repr(args) + ";\n")
-  createCA(seen, CAtoCAInfo, sourceDest, jsfile, mentor)
-  jsfile.write(mentor + ".addChildren([" + ",".join(mentees) + "]);\n")
-  seen.add(mentor)
+  for mentee in sourceDest.get(thisCA, []):
+    createCADracula(seen, CAtoCAInfo, sourceDest, jsfile, mentee)
+
+  jsfile.write("g.addNode(" + repr(thisCA) + ");\n")
+  for mentee in sourceDest.get(thisCA, []):
+    jsfile.write("g.addEdge(" + repr(thisCA) + ", " + repr(mentee) + ");\n")
+  seen.add(thisCA)
+
+def createCAD3(seen, CAtoCAInfo, sourceDest, jsfile, thisCA, CAToNumMap, num):
+  if thisCA in seen: return num
+  
+  for mentee in sourceDest.get(thisCA, []):
+    num = createCAD3(seen, CAtoCAInfo, sourceDest, jsfile, mentee, CAToNumMap, num)
+        
+  semester = findMinSemesterCAed(CAtoCAInfo, sourceDest, thisCA)
+  CAToNumMap[thisCA] = num
+  jsfile.write("\t\t{\"names\":%s,group:%d},\n" % (repr(thisCA), semester))
+  seen.add(thisCA)
+  return num + 1
+  
+def findMinSemesterCAed(CAtoCAInto, sourceDest, thisCA):
+  semestersCAed = CAtoCAInfo[thisCA]["CAed"]
+  semestersCAed = [semester for semester in semestersCAed.keys() if semestersCAed[semester]]
+  return min(semestersCAed)
+
+seen = set()
+if mode == "jit":
+  jsfile = open("CAFamilyData.js", "w")
+  pass
+elif mode == "dracula":
+  jsfile = open("CAFamilyData.js", "w")
+  for CA in sourceDest:
+    createCADracula(seen, CAtoCAInfo, sourceDest, jsfile, CA)
+elif mode == "d3":
+  jsfile = open("cas.json", "w")
+  jsfile.write("{\n")
+  jsfile.write("\"nodes\" : [\n")
+  num = 1
+  CAToNumMap = {}
+  for mentor, mentees in sourceDest.items():
+    num = createCAD3(seen, CAtoCAInfo, sourceDest, jsfile, mentor, CAToNumMap, num)
+    for mentee in mentees:
+      num = createCAD3(seen, CAtoCAInfo, sourceDest, jsfile, mentee, CAToNumMap, num)
+  jsfile.write("],\n")
+  jsfile.write("\"links\" : [\n")
+  for mentor, mentees in sourceDest.items():
+    mentorSemester = findMinSemesterCAed(CAtoCAInfo, sourceDest, mentor)
+    for mentee in mentees:
+      menteeSemester = findMinSemesterCAed(CAtoCAInfo, sourceDest, mentee)
+      jsfile.write("{\t\t\"source\":%d,\"target\":%d,\"value\":%d\n" % \
+                   (CAToNumMap[mentor], CAToNumMap[mentee], menteeSemester - mentorSemester))
+
+else:
+  jsfile = open("CAFamilyData.js", "w")
+  for CA in sourceDest:
+    createCA(seen, CAtoCAInfo, sourceDest, jsfile, CA)
 
 jsfile.close()
 f.close()
