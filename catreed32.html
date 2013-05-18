@@ -9,6 +9,11 @@ path.link {
   stroke-width: 1.5px;
 }
 
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
 circle {
   stroke: #fff;
   stroke-width: 1.5px;
@@ -28,6 +33,9 @@ text {
 d3.json("cas.json", function(graph) {
 
 var color = d3.scale.category20();
+
+console.log("The color");
+console.log(color);
 
 var width = 1800,
     height = 1200;
@@ -60,11 +68,16 @@ svg.append("svg:defs").selectAll("marker")
     .attr("d", "M0,-5L10,0L0,5");
 
 // add the links and the arrows
-var path = svg.append("svg:g").selectAll("path")
-    .data(force.links())
-  .enter().append("svg:path")
+var link = svg.selectAll(".link")
+    .data(graph.links)
+  .enter().append("line")
     .attr("class", "link")
-    .attr("marker-end", "url(#end)");
+    .style("stroke-width", function(d) { return Math.sqrt(d.value); });
+//var path = svg.append("svg:g").selectAll("path")
+//    .data(force.links())
+//  .enter().append("svg:path")
+//    .attr("class", "link")
+//    .attr("marker-end", "url(#end)");
 
 // define the nodes
 var node = svg.selectAll(".node")
@@ -75,7 +88,7 @@ var node = svg.selectAll(".node")
 
 // add the nodes
 node.append("circle")
-    .attr("fill", function(d) {console.log(d); return color(d.group); })
+    .attr("fill", function(d) {return color(d.group); })
     .attr("r", 5);
 
 // add the text 
@@ -86,17 +99,22 @@ node.append("text")
 
 // add the curvy lines
 function tick() {
-    path.attr("d", function(d) {
-        var dx = d.target.x - d.source.x,
-            dy = d.target.y - d.source.y,
-            dr = Math.sqrt(dx * dx + dy * dy);
-        return "M" + 
-            d.source.x + "," + 
-            d.source.y + "A" + 
-            dr + "," + dr + " 0 0,1 " + 
-            d.target.x + "," + 
-            d.target.y;
-    });
+    link.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    //path.attr("d", function(d) {
+    //    var dx = d.target.x - d.source.x,
+    //        dy = d.target.y - d.source.y,
+    //        dr = Math.sqrt(dx * dx + dy * dy);
+    //    return "M" + 
+    //        d.source.x + "," + 
+    //        d.source.y + "A" + 
+    //        dr + "," + dr + " 0 0,1 " + 
+    //        d.target.x + "," + 
+    //        d.target.y;
+    //});
 
     node
         .attr("transform", function(d) { 
