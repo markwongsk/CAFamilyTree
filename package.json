@@ -1,0 +1,32 @@
+{
+  "name": "CAFamilyTree",
+  "version": "0.0.0",
+  "description": "A project encompassing the history of 15-100/15-110/15-112 course of CMU, with an emphasis on the CAs that have taught the course",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/markwongsk/CAFamilyTree.git"
+  },
+  "keywords": [
+    "CAFamilyTree",
+    "15110",
+    "15112",
+    "15100"
+  ],
+  "author": "Mark Wong Siang Kai",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/markwongsk/CAFamilyTree/issues"
+  },
+  "homepage": "https://github.com/markwongsk/CAFamilyTree",
+  "devDependencies": {
+    "grunt": "~0.4.4",
+    "typescript": "~1.0.0",
+    "grunt-typescript": "~0.3.0",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-contrib-clean": "~0.5.0"
+  }
+}
