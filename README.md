@@ -6,3 +6,6 @@ For developers:
 In order to get started run "npm install"
 And then run "grunt" to compile the typescript files into javascript files
 
+If you need to add/update libraries, you need to install bower. Run
+"sudo npm install -g bower" to install bower. Add the package into bower.json
+and run "bower install".

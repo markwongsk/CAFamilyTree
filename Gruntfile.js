@@ -2,12 +2,23 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-typescript');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('typescript-tpm');
     
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         clean: {
             build: {
                 src: ['js/**/*.js', 'js/**/*.js.map']
+            }
+        },
+
+        'tpm-install': {
+            options: {
+                dev: false
+            },
+            all: {
+                src: 'package.json',
+                dest: 'lib/typings/'
             }
         },
 
@@ -30,6 +41,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', [
         'clean',
+        'tpm-install',
         'typescript'
     ]);
 }

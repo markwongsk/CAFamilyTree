@@ -27,6 +27,7 @@
     "typescript": "~1.0.0",
     "grunt-typescript": "~0.3.0",
     "grunt-contrib-watch": "~0.6.1",
-    "grunt-contrib-clean": "~0.5.0"
+    "grunt-contrib-clean": "~0.5.0",
+    "typescript-tpm": "~0.1.7"
   }
 }
