@@ -3,3 +3,6 @@
 
 # emacs and system files
 *~
+
+# node modules
+node_modules
