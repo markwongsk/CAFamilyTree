@@ -1,0 +1,30 @@
+{
+  "version": "v4",
+  "repo": "borisyankov/DefinitelyTyped",
+  "ref": "master",
+  "path": "typings",
+  "bundle": "typings/tsd.d.ts",
+  "installed": {
+    "requirejs/require.d.ts": {
+      "commit": "5a8f9e312f3db37b8efc4dcdd1de204f60e67eb1"
+    },
+    "angularjs/angular.d.ts": {
+      "commit": "5a8f9e312f3db37b8efc4dcdd1de204f60e67eb1"
+    },
+    "angularjs/angular-route.d.ts": {
+      "commit": "980c3b10199892aa2f5867e27c5d2688d0b225b6"
+    },
+    "jquery/jquery.d.ts": {
+      "commit": "5a8f9e312f3db37b8efc4dcdd1de204f60e67eb1"
+    },
+    "d3/d3.d.ts": {
+      "commit": "23b6edd28c0f5ccbe9e01bcfc84963d07b921ff7"
+    },
+    "dagre/dagre.d.ts": {
+      "commit": "bba34156c1eaad788fa8996f7d30b54c4fce5ffe"
+    },
+    "dagre-d3/dagre-d3.d.ts": {
+      "commit": "bba34156c1eaad788fa8996f7d30b54c4fce5ffe"
+    }
+  }
+}
