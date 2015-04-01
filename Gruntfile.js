@@ -92,9 +92,19 @@ module.exports = function (grunt) {
                     },
                     {
                         expand: true,
+                        src: "assets/**",
+                        dest: "build/"
+                    },
+                    {
+                        expand: true,
                         src: "src/**/*.html",
                         dest: "build/"
-                    }
+                    },
+                    {
+                        expand: true,
+                        src: "src/**/*.ts",
+                        dest: "build/"
+                    },
                 ]
             },
         },
@@ -109,7 +119,7 @@ module.exports = function (grunt) {
                         expand: true,
                         cwd: "src/",
                         src: ["**/*.less"],
-                        dest: "build/css",
+                        dest: "build",
                         ext: ".css"
                     }
                 ]
