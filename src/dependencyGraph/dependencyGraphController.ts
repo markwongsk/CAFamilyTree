@@ -71,7 +71,7 @@ module CAFamilyTree.DependencyGraph {
             var addNode = (node) => {
                 if (!seenNodes[node]) {
                     seenNodes[node] = true;
-                    graph.setNode(node, { label: node });
+                    graph.setNode(node, { label: node, class: node });
                 }
             };
             Object.keys(semesterRecitationInfo).forEach((semester) => {
